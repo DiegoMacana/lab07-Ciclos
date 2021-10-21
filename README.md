@@ -1,7 +1,7 @@
 ### Escuela Colombiana de Ingeniería
 ### Ciclos de Vida del desarrollo de Software – CVDS
 #### Tecnologías de persistencia - Frameworks de Persistencia - Introducción a MyBatis
-ESTUDIANTES:DIEGO MACANA-NATALIA ORJUELA
+ESTUDIANTES:DIEGO MACANA-NATALIA ORJUELA HERNANDEZ
 
 En este laboratorio se utilizará un 'framework' de persistencia. La base de datos que se utilizará tiene los siguientes parámetros:
 
