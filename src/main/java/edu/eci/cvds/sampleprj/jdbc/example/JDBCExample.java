@@ -57,18 +57,15 @@ public class JDBCExample {
             System.out.println("-----------------------");
             
             
-            int suCodigoECI=20134423;
-            registrarNuevoProducto(con, suCodigoECI, "SU NOMBRE", 99999999);            
+            int suCodigoECI=2155289;
+            registrarNuevoProducto(con, suCodigoECI, "Natalia Orjuela", 99999999);            
             con.commit();
-                        
-            
             con.close();
                                    
         } catch (ClassNotFoundException | SQLException ex) {
             Logger.getLogger(JDBCExample.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        
+
     }
     
     /**
@@ -80,19 +77,18 @@ public class JDBCExample {
      * @throws SQLException 
      */
     public static void registrarNuevoProducto(Connection con, int codigo, String nombre,int precio) throws SQLException{
+        PreparedStatement registrarProducto= null;
         //Crear preparedStatement
-        String insertDatos="INSERT INTO ORD_PRODUCTOS VALUES(?,?,?)";
-         try (PreparedStatement registrarProducto =con.prepareStatement(insertDatos);)
-         {
-            //Asignar parámetros
-            registrarProducto.setInt(1,codigo);
-            registrarProducto.setString(2,nombre);
-            registrarProducto.setInt(3,precio);
-             //usar 'execute'
-            registrarProducto.executeUpdate();
-             con.commit();
+        String insertDatos="INSERT INTO ORD_PRODUCTOS VALUES(?,?,?);";
+         registrarProducto = con.prepareStatement(insertDatos);
+         //Asignar parámetros
+         registrarProducto.setInt(1,codigo);
+         registrarProducto.setString(2,nombre);
+         registrarProducto.setInt(3,precio);
+         //usar 'execute'
+         registrarProducto.executeUpdate();
+         con.commit();
         }
-    }
     
     /**
      * Consultar los nombres de los productos asociados a un pedido
@@ -102,20 +98,22 @@ public class JDBCExample {
      */
     public static List<String> nombresProductosPedido(Connection con, int codigoPedido)throws SQLException{
         List<String> np=new LinkedList<>();
-         String selectNombres="SELECT nombre FROM ORD_PRODUCTOS AND ORD_DETALLES_PEDIDO AND ORD_PEDIDOS WHERE pedido_fk=?";
-        try (PreparedStatement nombresProductos =con.prepareStatement(selectNombres);)
-         {
+        PreparedStatement nombresProductos= null;
+        String selectNombres="SELECT nombre FROM ORD_PRODUCTOS AND ORD_DETALLES_PEDIDO AND ORD_PEDIDOS WHERE pedido_fk=?";
+        nombresProductos =con.prepareStatement(selectNombres);
         //asignar parámetros
-            nombresProductos.setInt(1,codigoPedido);
+        nombresProductos.setInt(1,codigoPedido);
         //usar executeQuery
         //Sacar resultados del ResultSet
-            ResultSet res =nombresProductos.executeQuery();
-            //Llenar la lista y retornarla
-             while (res.next()){
-                np.add(res.getString(1));
-            }
-            return np;
-         }
+        ResultSet res =nombresProductos.executeQuery();
+        //Llenar la lista y retornarla
+        while (res.next()){
+            np.add(res.getString(1));
+        }
+        nombresProductos.close();
+        res.close();
+        return np;
+         
     }
 
     
@@ -127,23 +125,23 @@ public class JDBCExample {
      * @throws SQLException 
      */
     public static int valorTotalPedido(Connection con, int codigoPedido)throws SQLException{
-        
+        PreparedStatement valorTotal= null;
         //Crear prepared statement
-        String selectTotal="SELECT SUM(precio*cantidad)FROM ORD_DETALLES_PEDIDO AND ORD_PRODUCTOS AND ORD_PEDIDOS WHERE pedido_fk=? AND ORD_PRODUCTOS.codigo=producto_fk";
+        String selectTotal="SELECT SUM(precio*cantidad)FROM ORD_PEDIDOS JOIN ORD_DETALLE_PEDIDO ON ORD_PEDIDOS.codigo=ORD_DETALLE_PEDIDO.pedido_fk JOIN ORD_PRODUCTOS.codigo=producto_fk WHERE ORD_PEDIDOS.codigo=?";
+        valorTotal=con.prepareStatement(selectTotal);
         int resultado=0;
-        try (PreparedStatement valorTotal =con.prepareStatement(selectTotal);)
-         {
         //asignar parámetros
-              valorTotal.setInt(1,codigoPedido);
+        valorTotal.setInt(1,codigoPedido);
         //usar executeQuery
-            ResultSet res =valorTotal.executeQuery();
+        ResultSet res =valorTotal.executeQuery();
         //Sacar resultado del ResultSet
-            while (res.next()){
-                resultado=res.getInt(1);
-            }
-            return resultado;
-         }
+        while (res.next()){
+            resultado=res.getInt(1);
+        }
+        res.close();
+        valorTotal.close();
+        return resultado;
+         
     }
  
 }
-
