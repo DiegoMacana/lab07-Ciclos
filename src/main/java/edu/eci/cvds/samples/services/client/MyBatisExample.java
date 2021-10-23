@@ -60,7 +60,7 @@ public class MyBatisExample {
     }
 
     /**
-     * Programa principal de ejempo de uso de MyBATIS
+     * Programa principal de ejemplo de uso de MyBATIS
      * @param args
      * @throws SQLException 
      */
